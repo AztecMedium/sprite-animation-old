@@ -1,0 +1,69 @@
+import javafx.stage.Stage;
+import javafx.scene.Scene;
+import javafx.animation.Timeline;
+import javafx.animation.KeyFrame;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.LineTo;
+import javafx.animation.transition.PathTransition;
+import javafx.animation.transition.AnimationPath;
+import javafx.animation.Interpolator;
+
+
+var img2: ImageView = ImageView {
+    x: 0
+    y: 0
+    image: Image {
+        url: "{__DIR__}res.png"
+    }
+}
+
+def w = 75;
+def h = 89;
+def n = 12;
+def viewports = for (col in [0..&ltn]) {Rectangle2D{minX:col*w, minY:0, height: h, width: w}}
+img2.viewport = viewports[0];
+
+def path = Path {
+    elements: [
+        MoveTo {x:800 y:100}
+        LineTo {x:100 y:100}
+    ]
+}
+
+
+var timeline: Timeline = Timeline {
+    repeatCount: Timeline.INDEFINITE
+    keyFrames: [
+        for (i in [0..&ltn]) {
+            KeyFrame {
+                time: i*0.1s
+                action: function() {
+                    img2.viewport = viewports[i];
+                }
+
+            }
+        }
+    ]
+}
+timeline.play();
+
+var pathtr = PathTransition {
+    duration: 20s
+    node: img2
+    path: AnimationPath.createFromPath(path)
+    interpolator: Interpolator.LINEAR
+}
+pathtr.play();
+
+Stage {
+    title: "Application title"
+    scene: Scene {
+        width: 900
+        height: 150
+        content: img2
+    }
+}
